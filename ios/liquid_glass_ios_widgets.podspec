@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
 Wraps native iOS Liquid Glass (SwiftUI / UIKit) components as Flutter widgets
 via platform views.
                        DESC
-  s.homepage         = 'https://pub.dev/packages/liquid_glass_ios_widgets'
+  s.homepage         = 'https://github.com/xusanFlutter/liquid_glass_ios_widgets'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Husan' => 'startolibov@gmail.com' }
   s.source           = { :path => '.' }
