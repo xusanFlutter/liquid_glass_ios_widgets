@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'liquid_glass_ios_widgets'
-  s.version          = '0.1.0'
+  s.version          = '0.2.0'
   s.summary          = 'Native iOS 26 Liquid Glass components as Flutter widgets.'
   s.description      = <<-DESC
 Wraps native iOS Liquid Glass (SwiftUI / UIKit) components as Flutter widgets

@@ -25,15 +25,6 @@ class GalleryPage extends StatefulWidget {
 
 class _GalleryPageState extends State<GalleryPage> {
   int _tab = 0;
-  bool? _supported;
-
-  @override
-  void initState() {
-    super.initState();
-    LiquidGlass.isSupported().then((value) {
-      if (mounted) setState(() => _supported = value);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +36,7 @@ class _GalleryPageState extends State<GalleryPage> {
           Positioned.fill(
             child: IndexedStack(
               index: _tab,
-              children: [
-                _ControlsTab(supported: _supported),
-                const _GlassTab(),
-              ],
+              children: [const _ControlsTab(), const _GlassTab()],
             ),
           ),
           Positioned(
@@ -79,9 +67,7 @@ class _GalleryPageState extends State<GalleryPage> {
 }
 
 class _ControlsTab extends StatefulWidget {
-  const _ControlsTab({required this.supported});
-
-  final bool? supported;
+  const _ControlsTab();
 
   @override
   State<_ControlsTab> createState() => _ControlsTabState();
@@ -111,12 +97,25 @@ class _ControlsTabState extends State<_ControlsTab> {
             color: Colors.white,
           ),
         ),
-        Text(switch (widget.supported) {
-          null => 'Checking…',
-          true => 'iOS 26 — real Liquid Glass',
-          false => 'Liquid Glass unavailable, using fallbacks',
-        }, style: const TextStyle(color: Colors.white70)),
+        Text(
+          'isSupportLiquidGlass: ${LiquidGlass.isSupportLiquidGlass}',
+          style: const TextStyle(color: Colors.white70),
+        ),
         const SizedBox(height: 24),
+        _Section(
+          title: 'LiquidGlassAdaptive',
+          child: LiquidGlassAdaptive(
+            glass: LiquidGlassButton(
+              label: 'Liquid Glass supported',
+              systemImage: 'checkmark.seal.fill',
+              onPressed: () => setState(() => _taps++),
+            ),
+            fallback: CupertinoButton.filled(
+              onPressed: () => setState(() => _taps++),
+              child: const Text('Fallback widget'),
+            ),
+          ),
+        ),
         _Section(
           title: 'Buttons — tapped $_taps times',
           child: Wrap(

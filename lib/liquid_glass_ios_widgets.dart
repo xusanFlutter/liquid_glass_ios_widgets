@@ -4,6 +4,7 @@
 /// view, so it looks and behaves exactly like the system component.
 library;
 
+export 'src/adaptive.dart';
 export 'src/button.dart';
 export 'src/container.dart';
 export 'src/liquid_glass.dart';

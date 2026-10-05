@@ -1,3 +1,8 @@
+## 0.2.0
+
+- Add `LiquidGlass.isSupportLiquidGlass`, a synchronous check for Liquid Glass support.
+- Add `LiquidGlassAdaptive`, which shows one widget when Liquid Glass is supported and another otherwise.
+
 ## 0.1.0
 
 - Initial release: `LiquidGlassButton`, `LiquidGlassSwitch`, `LiquidGlassSlider`,

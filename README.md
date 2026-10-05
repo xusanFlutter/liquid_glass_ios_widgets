@@ -100,11 +100,30 @@ Stack(
 );
 ```
 
-Check at runtime whether real Liquid Glass is available:
+### Checking for Liquid Glass support
+
+`LiquidGlass.isSupportLiquidGlass` is a synchronous `bool`. It's `true` on
+iOS 26+ and `false` on older iOS versions and other platforms, so you can use
+it directly in `build`:
 
 ```dart
-final supported = await LiquidGlass.isSupported(); // true on iOS 26+
+if (LiquidGlass.isSupportLiquidGlass) {
+  // real Liquid Glass
+}
 ```
+
+`LiquidGlassAdaptive` shows its first widget when Liquid Glass is supported
+and its second widget otherwise:
+
+```dart
+LiquidGlassAdaptive(
+  glass: LiquidGlassButton(label: 'Save', onPressed: save),
+  fallback: CupertinoButton.filled(onPressed: save, child: const Text('Save')),
+);
+```
+
+`await LiquidGlass.isSupported()` asks the native side for the same
+answer.
 
 ## How it works
 

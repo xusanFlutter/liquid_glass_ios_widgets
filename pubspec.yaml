@@ -1,6 +1,6 @@
 name: liquid_glass_ios_widgets
 description: "Native iOS 26 Liquid Glass components (buttons, switch, slider, segmented control, glass container, tab bar) as Flutter widgets via platform views."
-version: 0.1.0
+version: 0.2.0
 repository: https://github.com/xusanFlutter/liquid_glass_ios_widgets
 issue_tracker: https://github.com/xusanFlutter/liquid_glass_ios_widgets/issues
 topics:

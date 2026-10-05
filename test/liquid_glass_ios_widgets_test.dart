@@ -93,7 +93,40 @@ void main() {
     }, variant: _android);
 
     testWidgets('isSupported is false', (tester) async {
+      expect(LiquidGlass.isSupportLiquidGlass, isFalse);
       expect(await LiquidGlass.isSupported(), isFalse);
     }, variant: _android);
+  });
+
+  group('LiquidGlassAdaptive', () {
+    tearDown(() => LiquidGlass.debugIsSupportLiquidGlassOverride = null);
+
+    const adaptive = LiquidGlassAdaptive(
+      glass: Text('glass'),
+      fallback: Text('fallback'),
+    );
+
+    testWidgets('shows glass when supported', (tester) async {
+      LiquidGlass.debugIsSupportLiquidGlassOverride = true;
+      await tester.pumpWidget(_wrap(adaptive));
+
+      expect(find.text('glass'), findsOneWidget);
+      expect(find.text('fallback'), findsNothing);
+    });
+
+    testWidgets('shows fallback when not supported', (tester) async {
+      LiquidGlass.debugIsSupportLiquidGlassOverride = false;
+      await tester.pumpWidget(_wrap(adaptive));
+
+      expect(find.text('fallback'), findsOneWidget);
+      expect(find.text('glass'), findsNothing);
+    });
+  });
+
+  test('parses the iOS major version', () {
+    expect(LiquidGlass.iosMajorVersion('Version 26.0 (Build 23A341)'), 26);
+    expect(LiquidGlass.iosMajorVersion('Version 18.6.2 (Build 22G100)'), 18);
+    expect(LiquidGlass.iosMajorVersion('26.1'), 26);
+    expect(LiquidGlass.iosMajorVersion('unknown'), isNull);
   });
 }
