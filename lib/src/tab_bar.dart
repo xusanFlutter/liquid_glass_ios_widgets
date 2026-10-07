@@ -43,6 +43,7 @@ class LiquidGlassTabBar extends StatefulWidget {
     required this.onTap,
     this.activeColor,
     this.inactiveColor,
+    this.iconSize,
   }) : assert(items.length > 1);
 
   final List<LiquidGlassTabItem> items;
@@ -50,6 +51,9 @@ class LiquidGlassTabBar extends StatefulWidget {
   final ValueChanged<int> onTap;
   final Color? activeColor;
   final Color? inactiveColor;
+
+  /// Point size of the SF Symbols; null keeps the system default.
+  final double? iconSize;
 
   @override
   State<LiquidGlassTabBar> createState() => _LiquidGlassTabBarState();
@@ -66,6 +70,7 @@ class _LiquidGlassTabBarState extends State<LiquidGlassTabBar>
     'selectedIndex': widget.currentIndex,
     'tint': widget.activeColor?.toARGB32(),
     'unselectedTint': widget.inactiveColor?.toARGB32(),
+    'iconSize': widget.iconSize,
   };
 
   @override
@@ -84,6 +89,7 @@ class _LiquidGlassTabBarState extends State<LiquidGlassTabBar>
         onTap: widget.onTap,
         activeColor: widget.activeColor,
         inactiveColor: widget.inactiveColor ?? CupertinoColors.inactiveGray,
+        iconSize: widget.iconSize ?? 30,
         items: [
           for (final item in widget.items)
             BottomNavigationBarItem(

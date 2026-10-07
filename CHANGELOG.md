@@ -1,3 +1,7 @@
+## 0.3.0
+
+- Add `LiquidGlassTabBar.iconSize` to set the point size of the tab SF Symbols.
+
 ## 0.2.0
 
 - Add `LiquidGlass.isSupportLiquidGlass`, a synchronous check for Liquid Glass support.

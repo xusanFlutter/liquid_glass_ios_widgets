@@ -53,9 +53,11 @@ final class GlassTabBarPlatformView: NSObject, FlutterPlatformView, UITabBarDele
   }
 
   private func apply(_ params: [String: Any]) {
+    let configuration = params.double("iconSize").map { UIImage.SymbolConfiguration(pointSize: CGFloat($0)) }
+    let symbol = { (name: String) in UIImage(systemName: name, withConfiguration: configuration) }
     let items = params.maps("items").enumerated().map { index, item -> UITabBarItem in
-      let image = item.string("systemImage").flatMap { UIImage(systemName: $0) }
-      let selectedImage = item.string("selectedSystemImage").flatMap { UIImage(systemName: $0) }
+      let image = item.string("systemImage").flatMap(symbol)
+      let selectedImage = item.string("selectedSystemImage").flatMap(symbol)
       let tabItem = UITabBarItem(title: item.string("label"), image: image, selectedImage: selectedImage ?? image)
       tabItem.tag = index
       tabItem.badgeValue = item.string("badge")
