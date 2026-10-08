@@ -144,7 +144,20 @@ Flutter widget ──creationParams──▶ UiKitView ──▶ FlutterPlatform
 - Controls are **controlled**: rebuild with the new value in `onChanged`. If
   you don't, the native control snaps back to the value you passed.
 
+## Dark mode
+
+Native views follow the **Flutter theme's** brightness
+(`CupertinoTheme.brightnessOf(context)`, which inside a `MaterialApp` comes
+from the Material theme), not the iOS system appearance. So an in-app
+light/dark switch (`ThemeMode`) applies to the native components too.
+
 ## Limitations
+
+- **Light theme on a dark system.** As of iOS 26, the Liquid Glass material
+  follows the device's system appearance and can't be lightened per view, so
+  with the system in dark mode and the app in a light theme, glass surfaces
+  stay dark. The text and controls inside them follow the app theme. A dark
+  app theme on a light system works fully.
 
 - **Performance.** Every widget is a separate platform view. Dozens of them
   in a scrolling list cost more than plain Flutter widgets.

@@ -28,7 +28,8 @@ protocol GlassViewModel: ObservableObject {
 ///   which lets Dart size widgets that don't have an explicit size.
 final class HostedGlassView<Model: GlassViewModel, Content: View>: NSObject, FlutterPlatformView {
   private let container = UIView()
-  private let hosting: UIHostingController<Content>
+  private let hosting: UIHostingController<GlassAppearanceRoot<Content>>
+  private let appearance = GlassAppearance()
   private let channel: FlutterMethodChannel
   private let model: Model
   private let emitter = GlassEventEmitter()
@@ -38,6 +39,7 @@ final class HostedGlassView<Model: GlassViewModel, Content: View>: NSObject, Flu
     frame: CGRect,
     viewId: Int64,
     messenger: FlutterBinaryMessenger,
+    params: [String: Any],
     model: Model,
     content: (Model, GlassEventEmitter) -> Content
   ) {
@@ -47,7 +49,9 @@ final class HostedGlassView<Model: GlassViewModel, Content: View>: NSObject, Flu
       binaryMessenger: messenger
     )
     emitter.channel = channel
-    hosting = UIHostingController(rootView: content(model, emitter))
+    hosting = UIHostingController(
+      rootView: GlassAppearanceRoot(appearance: appearance, content: content(model, emitter))
+    )
     super.init()
 
     container.frame = frame
@@ -61,6 +65,7 @@ final class HostedGlassView<Model: GlassViewModel, Content: View>: NSObject, Flu
       hosting.safeAreaRegions = []
     }
     container.addSubview(hosting.view)
+    applyInterfaceStyle(params)
 
     channel.setMethodCallHandler { [weak self] call, result in
       guard let self else {
@@ -70,6 +75,7 @@ final class HostedGlassView<Model: GlassViewModel, Content: View>: NSObject, Flu
       switch call.method {
       case "update":
         if let params = call.arguments as? [String: Any] {
+          self.applyInterfaceStyle(params)
           self.model.update(with: params)
           self.scheduleSizeReport()
         }
@@ -79,6 +85,19 @@ final class HostedGlassView<Model: GlassViewModel, Content: View>: NSObject, Flu
       }
     }
     scheduleSizeReport()
+  }
+
+  /// Makes the view follow the Flutter theme's brightness.
+  ///
+  /// The trait override covers UIKit-backed SwiftUI controls. SwiftUI itself
+  /// gets the color scheme through its environment: the hosting controller
+  /// isn't in a view controller hierarchy, so trait changes alone don't
+  /// reliably reach it.
+  private func applyInterfaceStyle(_ params: [String: Any]) {
+    let style = UIUserInterfaceStyle(brightness: params)
+    appearance.colorScheme = ColorScheme(style)
+    hosting.overrideUserInterfaceStyle = style
+    container.applyInterfaceStyle(from: params)
   }
 
   deinit {
@@ -101,6 +120,27 @@ final class HostedGlassView<Model: GlassViewModel, Content: View>: NSObject, Flu
     guard size.width > 0, size.height > 0, size != lastReportedSize else { return }
     lastReportedSize = size
     emitter.send("intrinsicSize", ["width": size.width, "height": size.height])
+  }
+}
+
+/// Color scheme from the Flutter theme; nil follows the system.
+final class GlassAppearance: ObservableObject {
+  @Published var colorScheme: ColorScheme?
+}
+
+/// Injects [GlassAppearance] into the SwiftUI environment.
+struct GlassAppearanceRoot<Content: View>: View {
+  @ObservedObject var appearance: GlassAppearance
+  let content: Content
+
+  var body: some View {
+    // transformEnvironment keeps the view identity (and state) stable when
+    // switching between an explicit and the system color scheme.
+    content.transformEnvironment(\.colorScheme) { scheme in
+      if let override = appearance.colorScheme {
+        scheme = override
+      }
+    }
   }
 }
 
@@ -141,6 +181,7 @@ func hostedGlassFactory<Model: GlassViewModel, Content: View>(
       frame: frame,
       viewId: viewId,
       messenger: messenger,
+      params: params,
       model: model(params),
       content: content
     )

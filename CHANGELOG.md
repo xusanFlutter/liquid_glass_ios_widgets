@@ -1,3 +1,9 @@
+## 0.3.1
+
+- Native views now follow the Flutter theme's brightness instead of the iOS
+  system appearance, so an in-app dark mode no longer leaves the tab bar and
+  other components light.
+
 ## 0.3.0
 
 - Add `LiquidGlassTabBar.iconSize` to set the point size of the tab SF Symbols.

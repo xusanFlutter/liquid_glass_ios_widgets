@@ -60,6 +60,7 @@ final class GlassSwitchPlatformView: NSObject, FlutterPlatformView {
   }
 
   private func apply(_ params: [String: Any], animated: Bool) {
+    toggle.applyInterfaceStyle(from: params)
     toggle.onTintColor = params.uiColor("tint")
     toggle.isEnabled = params.bool("enabled") ?? true
     let value = params.bool("value") ?? false

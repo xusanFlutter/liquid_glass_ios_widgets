@@ -4,14 +4,24 @@ import 'package:liquid_glass_ios_widgets/liquid_glass_ios_widgets.dart';
 
 void main() => runApp(const ExampleApp());
 
+/// The app's theme mode, switchable from the Controls tab. Native views
+/// follow the Flutter theme, not the iOS appearance.
+final themeMode = ValueNotifier(ThemeMode.system);
+
 class ExampleApp extends StatelessWidget {
   const ExampleApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: GalleryPage(),
+    return ValueListenableBuilder(
+      valueListenable: themeMode,
+      builder: (context, mode, _) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData.light(),
+        darkTheme: ThemeData.dark(),
+        themeMode: mode,
+        home: const GalleryPage(),
+      ),
     );
   }
 }
@@ -102,6 +112,21 @@ class _ControlsTabState extends State<_ControlsTab> {
           style: const TextStyle(color: Colors.white70),
         ),
         const SizedBox(height: 24),
+        _Section(
+          title: 'Theme mode',
+          child: ValueListenableBuilder(
+            valueListenable: themeMode,
+            builder: (context, mode, _) => LiquidGlassSegmentedControl(
+              selectedIndex: mode.index,
+              onChanged: (index) => themeMode.value = ThemeMode.values[index],
+              segments: const [
+                LiquidGlassSegment(label: 'System'),
+                LiquidGlassSegment(label: 'Light'),
+                LiquidGlassSegment(label: 'Dark'),
+              ],
+            ),
+          ),
+        ),
         _Section(
           title: 'LiquidGlassAdaptive',
           child: LiquidGlassAdaptive(

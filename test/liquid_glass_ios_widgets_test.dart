@@ -56,6 +56,26 @@ void main() {
       expect(params['enabled'], isFalse);
     }, variant: _iOS);
 
+    testWidgets('native views get the Flutter theme brightness', (
+      tester,
+    ) async {
+      Widget app(Brightness brightness) => CupertinoApp(
+        theme: CupertinoThemeData(brightness: brightness),
+        home: Center(
+          child: LiquidGlassButton(label: 'Go', onPressed: () {}),
+        ),
+      );
+
+      await tester.pumpWidget(app(Brightness.dark));
+      expect(_nativeParams(tester)['brightness'], 'dark');
+
+      // A new key forces a new native view with fresh creation params.
+      await tester.pumpWidget(
+        KeyedSubtree(key: UniqueKey(), child: app(Brightness.light)),
+      );
+      expect(_nativeParams(tester)['brightness'], 'light');
+    }, variant: _iOS);
+
     testWidgets('slider converts divisions to a step', (tester) async {
       await tester.pumpWidget(
         _wrap(

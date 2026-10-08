@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart' show CupertinoTheme;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
@@ -16,11 +17,15 @@ bool get isNativeGlassPlatform =>
 /// Shared plumbing for widgets backed by a native iOS platform view.
 ///
 /// Each view gets its own `liquid_glass_ios_widgets/view_<id>` channel.
-/// Parameters are resent whenever [creationParams] changes, and native
-/// events are routed to [handleEvent].
+/// Parameters are resent whenever [creationParams] or the theme brightness
+/// changes, and native events are routed to [handleEvent].
+///
+/// The native view follows the Flutter theme's brightness rather than the
+/// iOS system appearance, so it matches apps that pick their own theme mode.
 mixin NativeGlassViewMixin<T extends StatefulWidget> on State<T> {
   MethodChannel? _channel;
   Map<String, Object?>? _sentParams;
+  Brightness? _brightness;
 
   /// Size measured natively, used when the widget has no explicit size.
   Size? intrinsicSize;
@@ -41,7 +46,7 @@ mixin NativeGlassViewMixin<T extends StatefulWidget> on State<T> {
   void syncNativeView({bool force = false}) {
     final channel = _channel;
     if (channel == null) return;
-    final params = creationParams;
+    final params = _nativeParams;
     if (!force && _paramsEquality.equals(params, _sentParams)) return;
     _sentParams = params;
     channel.invokeMethod<void>('update', params);
@@ -52,6 +57,20 @@ mixin NativeGlassViewMixin<T extends StatefulWidget> on State<T> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) syncNativeView(force: true);
     });
+  }
+
+  /// [creationParams] plus the parameters shared by every native view.
+  Map<String, Object?> get _nativeParams => {
+    ...creationParams,
+    'brightness': _brightness?.name,
+  };
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Also registers a dependency, so theme changes call this again.
+    _brightness = CupertinoTheme.brightnessOf(context);
+    syncNativeView();
   }
 
   @override
@@ -71,7 +90,7 @@ mixin NativeGlassViewMixin<T extends StatefulWidget> on State<T> {
     PlatformViewHitTestBehavior hitTestBehavior =
         PlatformViewHitTestBehavior.opaque,
   }) {
-    final params = creationParams;
+    final params = _nativeParams;
     return UiKitView(
       viewType: 'liquid_glass_ios_widgets/$viewType',
       creationParams: params,

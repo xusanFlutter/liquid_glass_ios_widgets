@@ -149,3 +149,40 @@ extension View {
     }
   }
 }
+
+// MARK: - Appearance
+
+extension UIUserInterfaceStyle {
+  /// The Flutter theme's brightness (`"light"` / `"dark"`), so native views
+  /// match the app's theme even when it differs from the iOS appearance.
+  init(brightness params: [String: Any]) {
+    switch params.string("brightness") {
+    case "dark": self = .dark
+    case "light": self = .light
+    default: self = .unspecified
+    }
+  }
+}
+
+extension ColorScheme {
+  init?(_ style: UIUserInterfaceStyle) {
+    switch style {
+    case .dark: self = .dark
+    case .light: self = .light
+    default: return nil
+    }
+  }
+}
+
+extension UIView {
+  /// Applies the Flutter theme's brightness to this view and its subviews.
+  /// Trait overrides only propagate on layout, which Flutter doesn't trigger
+  /// for a theme change, so layout is forced.
+  func applyInterfaceStyle(from params: [String: Any]) {
+    let style = UIUserInterfaceStyle(brightness: params)
+    guard overrideUserInterfaceStyle != style else { return }
+    overrideUserInterfaceStyle = style
+    setNeedsLayout()
+    layoutIfNeeded()
+  }
+}
