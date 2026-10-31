@@ -40,6 +40,8 @@ final class GlassSwitchPlatformView: NSObject, FlutterPlatformView {
           self.apply(params, animated: true)
         }
         result(nil)
+      case "snapshot":
+        result(self.container.glassSnapshot())
       default:
         result(FlutterMethodNotImplemented)
       }

@@ -38,6 +38,8 @@ final class GlassTabBarPlatformView: NSObject, FlutterPlatformView, UITabBarDele
           self.apply(params)
         }
         result(nil)
+      case "snapshot":
+        result(self.container.glassSnapshot())
       default:
         result(FlutterMethodNotImplemented)
       }

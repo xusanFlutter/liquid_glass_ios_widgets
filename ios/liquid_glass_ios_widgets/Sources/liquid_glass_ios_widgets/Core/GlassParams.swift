@@ -1,3 +1,4 @@
+import Flutter
 import SwiftUI
 import UIKit
 
@@ -184,5 +185,44 @@ extension UIView {
     overrideUserInterfaceStyle = style
     setNeedsLayout()
     layoutIfNeeded()
+  }
+}
+
+// MARK: - Snapshots
+
+extension UIView {
+  /// Renders the view as it currently appears on screen, glass included, as
+  /// premultiplied RGBA pixels for Dart's `decodeImageFromPixels`.
+  ///
+  /// Dart shows the snapshot in place of the platform view during route
+  /// transitions. Raw pixels skip PNG encoding and decoding.
+  func glassSnapshot() -> [String: Any]? {
+    guard let window, bounds.width > 0, bounds.height > 0 else { return nil }
+    let scale = window.traitCollection.displayScale
+    let width = Int(ceil(bounds.width * scale))
+    let height = Int(ceil(bounds.height * scale))
+    var pixels = Data(count: width * height * 4)
+    let drawn = pixels.withUnsafeMutableBytes { buffer -> Bool in
+      guard
+        let colorSpace = CGColorSpace(name: CGColorSpace.sRGB),
+        let context = CGContext(
+          data: buffer.baseAddress,
+          width: width,
+          height: height,
+          bitsPerComponent: 8,
+          bytesPerRow: width * 4,
+          space: colorSpace,
+          bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue
+        )
+      else { return false }
+      // UIKit draws top-down, Core Graphics bitmaps are bottom-up.
+      context.translateBy(x: 0, y: CGFloat(height))
+      context.scaleBy(x: scale, y: -scale)
+      UIGraphicsPushContext(context)
+      defer { UIGraphicsPopContext() }
+      return drawHierarchy(in: bounds, afterScreenUpdates: false)
+    }
+    guard drawn else { return nil }
+    return ["width": width, "height": height, "pixels": FlutterStandardTypedData(bytes: pixels)]
   }
 }

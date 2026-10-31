@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:liquid_glass_ios_widgets/liquid_glass_ios_widgets.dart';
 
@@ -90,6 +91,62 @@ void main() {
       );
 
       expect(_nativeParams(tester)['step'], 2.5);
+    }, variant: _iOS);
+
+    testWidgets('native view is swapped for a snapshot while covered', (
+      tester,
+    ) async {
+      final messenger = tester.binding.defaultBinaryMessenger;
+      final calls = <String>[];
+      messenger.setMockMethodCallHandler(SystemChannels.platform_views, (
+        call,
+      ) async {
+        if (call.method == 'create') {
+          final id = (call.arguments as Map)['id'] as int;
+          messenger.setMockMethodCallHandler(
+            MethodChannel('liquid_glass_ios_widgets/view_$id'),
+            (call) async {
+              calls.add(call.method);
+              if (call.method != 'snapshot') return null;
+              return {
+                'width': 1,
+                'height': 1,
+                'pixels': Uint8List.fromList([0, 0, 0, 255]),
+              };
+            },
+          );
+        }
+        return null;
+      });
+
+      final navigator = GlobalKey<NavigatorState>();
+      await tester.pumpWidget(
+        CupertinoApp(
+          navigatorKey: navigator,
+          home: Center(
+            child: LiquidGlassButton(label: 'Go', onPressed: () {}),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(RawImage), findsNothing);
+
+      await tester.runAsync(() async {
+        navigator.currentState!.push(
+          CupertinoPageRoute<void>(builder: (_) => const SizedBox()),
+        );
+        await tester.pump();
+        // Let the snapshot reply and the pixel decode complete.
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      });
+      await tester.pump();
+      expect(calls, contains('snapshot'));
+      expect(find.byType(RawImage, skipOffstage: false), findsOneWidget);
+
+      navigator.currentState!.pop();
+      await tester.pumpAndSettle();
+      expect(find.byType(RawImage), findsNothing);
+      expect(find.byType(UiKitView), findsOneWidget);
     }, variant: _iOS);
   });
 

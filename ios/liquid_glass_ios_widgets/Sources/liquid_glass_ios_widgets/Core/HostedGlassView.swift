@@ -80,6 +80,8 @@ final class HostedGlassView<Model: GlassViewModel, Content: View>: NSObject, Flu
           self.scheduleSizeReport()
         }
         result(nil)
+      case "snapshot":
+        result(self.container.glassSnapshot())
       default:
         result(FlutterMethodNotImplemented)
       }

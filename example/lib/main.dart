@@ -179,6 +179,16 @@ class _ControlsTabState extends State<_ControlsTab> {
           ),
         ),
         _Section(
+          title: 'Navigation',
+          child: LiquidGlassButton(
+            label: 'Push a page',
+            systemImage: 'arrow.right',
+            onPressed: () => Navigator.of(context).push(
+              CupertinoPageRoute<void>(builder: (_) => const _DetailPage()),
+            ),
+          ),
+        ),
+        _Section(
           title: 'Full width',
           child: LiquidGlassButton(
             label: 'Continue',
@@ -376,6 +386,24 @@ class _ColorfulBackground extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [Color(0xFF1E3C72), Color(0xFF8E2DE2), Color(0xFFFF6A00)],
         ),
+      ),
+    );
+  }
+}
+
+/// A pushed page. While it covers the gallery, the gallery's native views
+/// are replaced by snapshots so the transition stays smooth.
+class _DetailPage extends StatelessWidget {
+  const _DetailPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoPageScaffold(
+      navigationBar: const CupertinoNavigationBar(middle: Text('Detail')),
+      child: ListView.builder(
+        itemCount: 40,
+        itemBuilder: (context, index) =>
+            CupertinoListTile(title: Text('Row ${index + 1}')),
       ),
     );
   }

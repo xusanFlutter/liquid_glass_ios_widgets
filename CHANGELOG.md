@@ -1,3 +1,12 @@
+## 0.3.2
+
+- Smoother route transitions: while a page is pushed over (or popped from) a
+  page with Liquid Glass widgets, each native view is swapped for a snapshot
+  of itself, so Flutter no longer re-composites platform views every frame.
+  Covered pages keep no native views on screen at all.
+- Measured sizes are remembered, so the same widget on a newly pushed page
+  starts at its real size instead of jumping once measured.
+
 ## 0.3.1
 
 - Native views now follow the Flutter theme's brightness instead of the iOS
