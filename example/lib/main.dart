@@ -59,13 +59,16 @@ class _GalleryPageState extends State<GalleryPage> {
               items: const [
                 LiquidGlassTabItem(
                   label: 'Controls',
-                  systemImage: 'slider.horizontal.3',
+                  systemImage: 'gearshape',
+                  selectedSystemImage: 'gearshape.fill',
+                  selectedEffect: LiquidGlassTabIconEffect.rotate,
                 ),
                 LiquidGlassTabItem(
                   label: 'Glass',
                   systemImage: 'drop',
                   selectedSystemImage: 'drop.fill',
                   badge: 'new',
+                  selectedEffect: LiquidGlassTabIconEffect.wiggle,
                 ),
               ],
             ),

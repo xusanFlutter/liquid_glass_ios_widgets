@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 import 'native_glass_view.dart';
+import 'types.dart';
 
 /// One item of a [LiquidGlassTabBar].
 class LiquidGlassTabItem {
@@ -9,6 +10,7 @@ class LiquidGlassTabItem {
     required this.systemImage,
     this.selectedSystemImage,
     this.badge,
+    this.selectedEffect = LiquidGlassTabIconEffect.bounce,
   });
 
   final String label;
@@ -22,11 +24,15 @@ class LiquidGlassTabItem {
   /// Badge text; null hides the badge.
   final String? badge;
 
+  /// Animation the icon plays when this tab becomes selected.
+  final LiquidGlassTabIconEffect selectedEffect;
+
   Map<String, Object?> toMap() => {
     'label': label,
     'systemImage': systemImage,
     'selectedSystemImage': selectedSystemImage,
     'badge': badge,
+    'selectedEffect': selectedEffect.name,
   };
 }
 

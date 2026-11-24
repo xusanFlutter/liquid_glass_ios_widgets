@@ -45,3 +45,27 @@ class LiquidGlassShape {
   @override
   int get hashCode => Object.hash(kind, cornerRadius);
 }
+
+/// Animation a [LiquidGlassTabItem]'s icon plays when the tab is selected.
+enum LiquidGlassTabIconEffect {
+  /// No animation.
+  none,
+
+  /// Squeezes and springs back.
+  bounce,
+
+  /// Briefly grows and settles.
+  scale,
+
+  /// Fades out and back in.
+  pulse,
+
+  /// Shakes side to side.
+  wiggle,
+
+  /// Spins one full turn, e.g. for a gear.
+  rotate,
+
+  /// Gently swells and shrinks.
+  breathe,
+}

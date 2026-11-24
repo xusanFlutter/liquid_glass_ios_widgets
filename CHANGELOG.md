@@ -1,3 +1,11 @@
+## 0.4.0
+
+- A tab's icon now animates when the tab is selected. The default is a bounce.
+  Use `LiquidGlassTabItem.selectedEffect` with a `LiquidGlassTabIconEffect` to
+  pick `wiggle`, `rotate`, `scale`, `pulse`, `breathe` or `none`.
+- Changing a tab item's badge, label or icon no longer replays the selection
+  animation. Existing items are now updated in place.
+
 ## 0.3.2
 
 - Smoother route transitions: while a page is pushed over (or popped from) a

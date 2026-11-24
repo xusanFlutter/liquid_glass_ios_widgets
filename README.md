@@ -93,12 +93,21 @@ Stack(
         items: const [
           LiquidGlassTabItem(label: 'Home', systemImage: 'house', selectedSystemImage: 'house.fill'),
           LiquidGlassTabItem(label: 'Search', systemImage: 'magnifyingglass'),
+          LiquidGlassTabItem(
+            label: 'Settings',
+            systemImage: 'gearshape',
+            selectedEffect: LiquidGlassTabIconEffect.rotate,
+          ),
         ],
       ),
     ),
   ],
 );
 ```
+
+A tab's icon animates when it's selected. The default is a bounce; set
+`selectedEffect` to `wiggle`, `rotate`, `scale`, `pulse`, `breathe` or `none`
+for each item.
 
 ### Checking for Liquid Glass support
 
